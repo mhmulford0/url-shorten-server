@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const nanoid = require("nanoid");
+const db = require("../data/dbConfig");
 
 
 router.get("/", (req, res) => {
@@ -7,9 +8,12 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { longUrl } = req.body;
-  const id = nanoid.nanoid(14);
-  res.status(201).json({ url_added: id });
+  const { longLink } = req.body;
+  const shortLink = nanoid.nanoid(14);
+  res.status(201).json({
+    longLink: longLink,
+    shortLink: `${process.env.BASE_URL}${shortLink}`,
+  });
 });
 
 module.exports = router;
