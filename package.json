@@ -10,10 +10,12 @@
   "author": "Matthew Mulford",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "knex": "^0.21.12",
     "nanoid": "^3.1.16",
+    "public-ip": "^4.0.2",
     "sqlite3": "^5.0.0",
     "valid-url": "^1.0.9"
   },

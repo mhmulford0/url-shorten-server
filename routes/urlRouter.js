@@ -3,7 +3,8 @@ const nanoid = require("nanoid");
 const db = require('../data/dbConfig');
 
 const validUrl = require('valid-url');
-
+const publicIp = require('public-ip');
+const axios = require('axios');
 
 router.get("/", (req, res) => {
   res.status(200).json({ message: "url routes" });
@@ -11,7 +12,14 @@ router.get("/", (req, res) => {
 
 router.get('/:shortLink', async (req, res) => {
   const shortLink = req.params.shortLink;
-  console.log(req.ip);
+  const vistorIp = await publicIp.v4();
+
+  const visitorLocation = await axios.get(
+    `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`
+  );
+
+  console.log(visitorLocation.data);
+
   try {
     const linkInfo = await db('links')
       .where('shortLink', '=', shortLink)
