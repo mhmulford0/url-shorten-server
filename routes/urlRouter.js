@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const nanoid = require("nanoid");
-const db = require("../data/dbConfig");
-const Joi = require('joi');
+const db = require('../data/dbConfig');
 
+const validUrl = require('valid-url');
 
 
 router.get("/", (req, res) => {
@@ -11,29 +11,14 @@ router.get("/", (req, res) => {
 
 router.post('/', async (req, res) => {
   const { longLink } = req.body;
-  const shortLink = nanoid.nanoid(14);
-
-  const schema = Joi.object({
-    longLink: Joi.string()
-      .required()
-      .uri({
-        scheme: ['http', 'https'],
-      }),
-  });
-
-  const url = schema.validate({ longLink });
+  const shortLink = nanoid.customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 12)();
   
-  if (url.error) {
-    console.log(url);
-    res.status(400).json({message: "Invalid URL"})
+  if(validUrl.isWebUri(longLink)) {
+    res.status(201).json({message: shortLink});
   } else {
-    res.status(201).json({
-      longLink: longLink,
-      shortLink: `${process.env.BASE_URL}${shortLink}`,
-    });
-  
+    res.status(400).json({message: "invalid URL"})
   }
-
+  
 });
 
 module.exports = router;
