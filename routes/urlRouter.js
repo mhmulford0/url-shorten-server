@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
 router.get('/:shortLink', async (req, res) => {
   const shortLink = req.params.shortLink;
   const vistorIp = await publicIp.v4();
-
+  console.log(vistorIp);
   try {
     const linkId = await db('links')
       .where('shortLink', '=', shortLink)
