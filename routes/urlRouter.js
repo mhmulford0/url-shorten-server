@@ -12,11 +12,11 @@ router.get("/", (req, res) => {
 
 router.get('/:shortLink', async (req, res) => {
   const shortLink = req.params.shortLink;
-  
+  let vistorIp;
   if(process.env.NODE_ENV == 'development') {
-    const vistorIp = await publicIp.v4();
+    vistorIp = await publicIp.v4();
   } else {
-    const vistorIp = req.headers["x-forwarded-for"];
+    vistorIp = req.headers['x-forwarded-for'];
     console.log('PROD' + vistorIp);
   }
   
