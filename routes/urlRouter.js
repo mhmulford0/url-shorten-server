@@ -17,7 +17,7 @@ router.get('/:shortLink', async (req, res) => {
     const vistorIp = await publicIp.v4();
   } else {
     const vistorIp = req.headers["x-forwarded-for"];
-    console.log(vistorIp)
+    console.log('PROD' + vistorIp);
   }
   
   try {
