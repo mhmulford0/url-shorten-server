@@ -12,8 +12,14 @@ router.get("/", (req, res) => {
 
 router.get('/:shortLink', async (req, res) => {
   const shortLink = req.params.shortLink;
-  const vistorIp = await publicIp.v4();
- 
+  
+  if(process.env.NODE_ENV == 'development') {
+    const vistorIp = await publicIp.v4();
+  } else {
+    const vistorIp = req.headers["x-forwarded-for"];
+    console.log(vistorIp)
+  }
+  
   try {
     const linkId = await db('links')
       .where('shortLink', '=', shortLink)
@@ -27,13 +33,12 @@ router.get('/:shortLink', async (req, res) => {
         `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`
       );
 
-     
+        const locData = `${visitorLocation.data.country_name} ${visitorLocation.data.region_name} ${visitorLocation.data.city}`;
 
-      await db('click_info')
-        .insert({
-          location: visitorLocation.data,
-          link_id: link.id,
-        })
+      await db('click_info').insert({
+        location: locData,
+        link_id: link.id,
+      });
 
       await db('links').where('shortLink', '=', shortLink).update({clicks: link.clicks + 1})
       res.redirect(link.longLink);
@@ -52,12 +57,11 @@ router.get('/:shortLink/info', async (req, res) => {
   try {
     const id = await db("links").where("shortLink", "=", shortLink).select("id")
     if(id.length === 1) {
-      const data = await db("click_info")
-      .join('links', "links.id", "=", "click_info.link_id")
-      .select('links.id', 'click_info.location', 'links.clicks')
-      .where("links.id", "=", id[0].id)
-      .groupBy("links.id")
-      console.log(data)
+      const data = await db('click_info')
+        .join('links', 'links.id', '=', 'click_info.link_id')
+        .select('links.id', 'click_info.location', 'links.clicks')
+        .where('links.id', '=', id[0].id);
+      console.log(data);
       res.status(200).json(data[0])
     } else {
       res.status(400).json({message: "link not found"})
