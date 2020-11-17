@@ -60,9 +60,10 @@ router.get('/:shortLink/info', async (req, res) => {
       const data = await db('click_info')
         .join('links', 'links.id', '=', 'click_info.link_id')
         .select('links.id', 'click_info.location', 'links.clicks')
-        .where('links.id', '=', id[0].id);
+        .where('click_info.link_id', '=', id[0].id);
+
       console.log(data);
-      res.status(200).json(data[0])
+      res.status(200).json(data[0]);
     } else {
       res.status(400).json({message: "link not found"})
     }
