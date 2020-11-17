@@ -14,31 +14,60 @@ router.get('/:shortLink', async (req, res) => {
   const shortLink = req.params.shortLink;
   const vistorIp = await publicIp.v4();
 
-  const visitorLocation = await axios.get(
-    `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`
-  );
-
-  console.log(visitorLocation.data);
-
   try {
-    const linkInfo = await db('links')
+    const linkId = await db('links')
       .where('shortLink', '=', shortLink)
-      .select('longLink', 'clicks');
+      .select('id', 'longLink', 'clicks');
 
-    if (linkInfo.length === 1) {
-      const link = linkInfo[0];
+    if (linkId.length === 1) {
+      const link = linkId[0];
+      console.log(link);
 
-      await db('links')
-        .update('clicks', link.clicks + 1)
-        .where('shortLink', '=', shortLink);
+      const visitorLocation = await axios.get(
+        `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`
+      );
+
+      await db('click_info')
+        .insert({
+          location: visitorLocation.data.city,
+          link_id: link.id,
+        })
+
+      await db('links').where('shortLink', '=', shortLink).update({clicks: link.clicks + 1})
       res.redirect(link.longLink);
     } else {
       res.status(400).json({ message: 'Link not found' });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+
+router.get('/:shortLink/info', async (req, res) => {
+  const shortLink = req.params.shortLink;
+  try {
+    const id = await db("links").where("shortLink", "=", shortLink).select("id")
+    if(id.length === 1) {
+      const data = await db("click_info")
+      .join('links', "links.id", "=", "click_info.link_id")
+      .select('links.id', 'click_info.location', 'links.clicks')
+      .where("links.id", "=", id[0].id)
+      .groupBy("links.id")
+      console.log(data)
+      res.status(200).json(data[0])
+    } else {
+      res.status(400).json({message: "link not found"})
+    }
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message: "server error"})
+  }
+
+})
+
 
 router.post('/', async (req, res) => {
   const { longLink } = req.body;
@@ -53,6 +82,7 @@ router.post('/', async (req, res) => {
       });
       res.status(201).json({message: shortLink});
     } catch (error) {
+      console.log(error)
       res.status(500).json({message: "there was an error with your request"})
     }
 
