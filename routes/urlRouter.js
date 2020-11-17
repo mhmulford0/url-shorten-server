@@ -27,6 +27,8 @@ router.get('/:shortLink', async (req, res) => {
         `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`
       );
 
+      console.log(visitorLocation);
+
       await db('click_info')
         .insert({
           location: visitorLocation.data.city,
