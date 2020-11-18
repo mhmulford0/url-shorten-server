@@ -3,7 +3,6 @@ exports.up = function (knex) {
     tbl.increments();
     tbl.string('longLink').notNullable();
     tbl.string('shortLink').notNullable();
-    tbl.integer('clicks').notNullable();
   });
 };
 
