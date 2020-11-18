@@ -7,7 +7,7 @@ const publicIp = require('public-ip');
 const axios = require('axios');
 
 router.get("/", (req, res) => {
-  res.status(200).json({ message: "url routes" });
+  res.status(200).json({ message: 'API up and running' });
 });
 
 router.get('/:shortLink', async (req, res) => {
@@ -31,21 +31,18 @@ router.get('/:shortLink', async (req, res) => {
 
     if (linkId.length === 1) {
       const link = linkId[0];
-      
 
       const visitorLocation = await axios.get(
         `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`
       );
-      
 
-      const locData = `${visitorLocation.data.country_name} ${visitorLocation.data.region_name} ${visitorLocation.data.city}`;
-      
+      const locationData = `${visitorLocation.data.country_name} ${visitorLocation.data.region_name} ${visitorLocation.data.city}`;
+
       await db('click_info').insert({
-        location: locData,
+        location: locationData,
         link_id: link.id,
       });
 
-      // await db('links').where('shortLink', '=', shortLink).update({clicks: link.clicks + 1})
       res.redirect(link.longLink);
     } else {
       res.status(400).json({ message: 'Link not found' });
