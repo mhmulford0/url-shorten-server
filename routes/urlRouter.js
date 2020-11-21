@@ -17,6 +17,7 @@ router.get('/:shortLink', async (req, res) => {
     try {
       vistorIp = await publicIp.v4();
     } catch (error) {
+      console.log(error);
       vistorIp = '8.8.8.8'
     }
     
