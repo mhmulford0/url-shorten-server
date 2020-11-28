@@ -75,8 +75,8 @@ router.get('/:shortLink/info', async (req, res) => {
       return { location: click.location, date: click.click_date };
     });
 
-    if (!clickData || !linkData) {
-      res.status(400).json({ message: 'Link Not found' });
+    if (!clickData.length > 0) {
+      res.status(400).json({ error: 'Link Not found' });
     } else {
       res.status(200).json({ linkInfo: linkData[0], clickInfo: clickData });
     }
