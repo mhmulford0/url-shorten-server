@@ -69,7 +69,7 @@ router.get('/:shortLink/info', async (req, res) => {
           'links.shortLink'
         )
         .where('links.shortLink', shortLink)
-        .orderBy('click_info.click_date', 'desc');
+        .orderBy('click_info.click_date', 'asc');
       const linkData = data.map((link) => {
         return { longLink: link.longLink, shortLink: link.shortLink };
       });
@@ -80,7 +80,7 @@ router.get('/:shortLink/info', async (req, res) => {
       if(!clickData || !linkData){
         res.status(400).json({message: "Link Not found"})
       } else {
-          res.status(200).json({ linkInfo: linkData, clickInfo: clickData });
+          res.status(200).json({ linkInfo: linkData[0], clickInfo: clickData });
       }
     } 
     catch (error) {
