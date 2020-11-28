@@ -42,6 +42,7 @@ router.get('/:shortLink', async (req, res) => {
       await db('click_info').insert({
         location: locationData,
         link_id: link.id,
+        click_date: new Date().toISOString(),
       });
 
       res.redirect(link.longLink);
@@ -63,10 +64,17 @@ router.get('/:shortLink/info', async (req, res) => {
     if(id.length === 1) {
       const data = await db('click_info')
         .join('links', 'links.id', '=', 'click_info.link_id')
-        .select('click_info.id', 'click_info.location')
-        .where('click_info.link_id', id[0].id)
-        
-      res.status(200).json(data);
+        .select(
+          'click_info.id',
+          'click_info.location',
+          'click_info.click_date',
+          'links.longLink',
+          'links.shortLink'
+        )
+        .where('click_info.link_id', id[0].id);
+      linkData = data.map((link) => [link.longLink, link.shortLink]);
+      clickData = data.map((click) => [click.location, click.click_date]);
+      res.status(200).json({ linkInfo: linkData, clickInfo: clickData });
     } else {
       res.status(400).json({message: "link not found"})
     }
@@ -89,7 +97,8 @@ router.post('/', async (req, res) => {
         longLink: longLink,
         shortLink: shortLink,
       });
-      res.status(201).json({message: shortLink});
+
+      res.status(201).json({ message: shortLink });
     } catch (error) {
       console.log(error)
       res.status(500).json({message: "there was an error with your request"})
