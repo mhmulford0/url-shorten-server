@@ -58,10 +58,7 @@ router.get('/:shortLink', async (req, res) => {
 
 router.get('/:shortLink/info', async (req, res) => {
   const shortLink = req.params.shortLink;
-  try {
-    const id = await db("links").where("shortLink", "=", shortLink).select("id")
-    
-    if(id.length === 1) {
+  try{
       const data = await db('click_info')
         .join('links', 'links.id', '=', 'click_info.link_id')
         .select(
@@ -71,17 +68,23 @@ router.get('/:shortLink/info', async (req, res) => {
           'links.longLink',
           'links.shortLink'
         )
-        .where('click_info.link_id', id[0].id);
-      linkData = data.map((link) => [link.longLink, link.shortLink]);
-      clickData = data.map((click) => [click.location, click.click_date]);
-      res.status(200).json({ linkInfo: linkData, clickInfo: clickData });
-    } else {
-      res.status(400).json({message: "link not found"})
-    }
+        .where('links.shortLink', shortLink);
+      linkData = data.map((link) => {
+        return { longLink: link.longLink, shortLink: link.shortLink };
+      });
+      clickData = data.map((click) => {
+        return { location: click.location, date: click.click_date };
+      });
 
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({message: "server error"})
+      if(!clickData || !linkData){
+        res.status(400).json({message: "Link Not found"})
+      } else {
+          res.status(200).json({ linkInfo: linkData, clickInfo: clickData });
+      }
+    } 
+    catch (error) {
+      console.log(error)
+      res.status(500).json({message: "server error"})
   }
 
 })
