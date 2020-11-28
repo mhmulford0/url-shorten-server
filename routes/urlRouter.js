@@ -68,11 +68,12 @@ router.get('/:shortLink/info', async (req, res) => {
           'links.longLink',
           'links.shortLink'
         )
-        .where('links.shortLink', shortLink);
-      linkData = data.map((link) => {
+        .where('links.shortLink', shortLink)
+        .orderBy('click_info.click_date', 'desc');
+      const linkData = data.map((link) => {
         return { longLink: link.longLink, shortLink: link.shortLink };
       });
-      clickData = data.map((click) => {
+      const clickData = data.map((click) => {
         return { location: click.location, date: click.click_date };
       });
 
