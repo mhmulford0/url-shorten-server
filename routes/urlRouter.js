@@ -57,8 +57,8 @@ router.get('/:shortLink', async (req, res) => {
 router.get('/:shortLink/info', async (req, res) => {
   const shortLink = req.params.shortLink;
   try {
-    const data = await db('click_info')
-      .join('links', 'links.id', '=', 'click_info.link_id')
+    const fullData = await db('links')
+      .join('click_info', 'links.id', '=', 'click_info.link_id')
       .select(
         'click_info.id',
         'click_info.location',
@@ -68,15 +68,27 @@ router.get('/:shortLink/info', async (req, res) => {
       )
       .where('links.shortLink', shortLink)
       .orderBy('click_info.click_date', 'asc');
-    const linkData = data.map((link) => {
+
+    const linkData = fullData.map((link) => {
       return { longLink: link.longLink, shortLink: link.shortLink };
     });
-    const clickData = data.map((click) => {
+
+    const clickData = fullData.map((click) => {
       return { location: click.location, date: click.click_date };
     });
 
-    if (!clickData.length > 0) {
-      res.status(400).json({ error: 'Link Not found' });
+    if (!linkData.length > 0) {
+      // check the db to see if the link exists without any clicks yet
+      const onlyLinkData = await db('links')
+        .select('links.longLink', 'links.shortLink')
+        .where('links.shortLink', shortLink);
+
+      // if no clicks, return an error - otherwise return just the link info
+      if (!onlyLinkData.length > 0) {
+        res.status(400).json({ error: 'Link Not found' });
+      } else {
+        res.status(200).json({ linkInfo: onlyLinkData[0], clickInfo: [] });
+      }
     } else {
       res.status(200).json({ linkInfo: linkData[0], clickInfo: clickData });
     }
