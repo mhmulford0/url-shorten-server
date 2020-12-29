@@ -7,7 +7,7 @@ const publicIp = require('public-ip');
 const axios = require('axios');
 
 router.get('/', (req, res) => {
-  res.status(200).json({ message: 'API up and running' });
+  res.redirect('https://client.lnkshrt.app/')
 });
 
 router.get('/:shortLink', async (req, res) => {
