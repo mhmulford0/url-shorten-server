@@ -7,7 +7,9 @@ const publicIp = require('public-ip');
 const axios = require('axios');
 
 router.get('/', (req, res) => {
-  res.redirect('https://client.lnkshrt.app/')
+  //res.redirect('https://client.lnkshrt.app/')
+  console.log(req.user)
+  res.sendStatus(201).end()
 });
 
 router.get('/:shortLink', async (req, res) => {
