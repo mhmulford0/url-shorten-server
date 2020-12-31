@@ -30,7 +30,8 @@ router.get('/', passport.authenticate('google', { scope: ['email', 'profile'] })
 
 
 router.get('/success', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
-  res.json(user)
+  
+  res.redirect("/")
 });
 
 
