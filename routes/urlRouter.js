@@ -102,7 +102,7 @@ router.post('/', async (req, res) => {
   const { longLink } = req.body;
   const shortLink = nanoid.customAlphabet(
     '1234567890abcdefghijklmnopqrstuvwxyz',
-    12
+    7
   )();
 
   if (validUrl.isWebUri(longLink)) {
