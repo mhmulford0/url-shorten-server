@@ -10,7 +10,7 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000','http://localhost:3001', 'https://client.lnkshrt.app' ],
   optionsSuccessStatus: 200, 
 };
 
