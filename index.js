@@ -17,7 +17,7 @@ const corsOptions = {
 app.use(cookieSession({
   name: "lnkshrtapp",
   keys: ['erghi923902309923u9023'],
-  domain: 'client.lnkshrt.app'
+  domain: 'lnkshrt.app'
 }))
 app.use(cookieParser());
 app.use(passport.initialize());
