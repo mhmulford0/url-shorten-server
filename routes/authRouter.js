@@ -29,6 +29,7 @@ router.get('/', passport.authenticate('google', { scope: ['email', 'profile'] })
 });
 
 router.get('/user', (req, res) => {
+  console.log(req.user)
   res.send(200).json(req.user)
 })
 
