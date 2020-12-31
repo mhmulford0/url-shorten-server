@@ -30,7 +30,7 @@ router.get('/', passport.authenticate('google', { scope: ['email', 'profile'] })
 
 router.get('/user', (req, res) => {
   console.log(req.user)
-  res.send(200).json(req.user)
+  res.send(200).json({user: req.user})
 })
 
 router.get('/success', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
