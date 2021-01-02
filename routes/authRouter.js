@@ -4,7 +4,8 @@ const db = require('../data/dbConfig');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
+  
   done(null, user);
 });
 
@@ -29,13 +30,13 @@ router.get('/', passport.authenticate('google', { scope: ['email', 'profile'] })
 });
 
 router.get('/user', (req, res) => {
-  console.log(req.user)
-  res.status(200).json({user: req.user})
+  const returnedUser = {id: req.user.id, name: req.user.displayName, email: req.user.emails[0].value};
+  res.status(200).json(returnedUser)
 })
 
 router.get('/success', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
   
-  res.redirect("/")
+  res.redirect("/dashboard")
 });
 
 
