@@ -36,7 +36,7 @@ router.get('/user', (req, res) => {
 
 router.get('/success', passport.authenticate('google', { scope: ['email', 'profile'] }), (req, res) => {
   
-  res.redirect("/dashboard")
+  res.redirect("https:client.lnkshrt.app/dashboard")
 });
 
 
