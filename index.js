@@ -13,15 +13,21 @@ const corsOptions = {
   origin: ['http://localhost:3000','http://localhost:3001', 'https://client.lnkshrt.app' ],
   optionsSuccessStatus: 200, 
 };
+const jwt = require('express-jwt');
+const jwks = require('jwks-rsa');
 
-app.use(cookieSession({
-  name: "lnkshrtapp",
-  keys: ['erghi923902309923u9023'],
-  domain: 'lnkshrt.app'
-}))
-app.use(cookieParser());
-app.use(passport.initialize());
-app.use(passport.session());
+const jwtCheck = jwt({
+      secret: jwks.expressJwtSecret({
+          cache: true,
+          rateLimit: true,
+          jwksRequestsPerMinute: 5,
+          jwksUri: 'https://dev-r-p4kmck.us.auth0.com/.well-known/jwks.json'
+    }),
+    audience: 'http://localhost:3000',
+    issuer: 'https://dev-r-p4kmck.us.auth0.com/',
+    algorithms: ['RS256']
+});
+
 
 const urlRouter = require("./routes/urlRouter");
 const authRouter = require("./routes/authRouter");
