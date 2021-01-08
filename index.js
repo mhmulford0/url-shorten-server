@@ -1,16 +1,38 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-const passport = require('passport')
-const cookieSession = require('cookie-session')
-const cookieParser = require('cookie-parser')
 const app = express()
+const cookieParser = require('cookie-parser')
 const port = process.env.PORT || 3001
 
+const admin = require('firebase-admin')
+
+const serviceAccount = require('./serviceAccountKey.json')
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+})
+
+const isAuthorized = (req, res, next) => {
+  const sessionCookie = req.cookies.session || ''
+
+  admin
+    .auth()
+    .verifySessionCookie(sessionCookie, true)
+    .then(() => {
+      next()
+    })
+    .catch((error) => {
+      res.status(401).json({message: 'Not Authorized'})
+    })
+}
+
+const linkInfoRouter = require('./routes/linkInfoRouter')
 const urlRouter = require('./routes/urlRouter')
 const authRouter = require('./routes/authRouter')
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.use(
   cors({
@@ -24,14 +46,7 @@ app.use(
   }),
 )
 
-app.use(
-  cookieSession({
-    name: 'lnkshrt.app',
-    keys: ['n23uior823n7ufn2832c', '906459450945459guwskwle'],
-    maxAge: 24 * 60 * 60 * 1000,
-  }),
-)
-
+app.use('/linkInfo', isAuthorized, linkInfoRouter)
 app.use('/auth', authRouter)
 app.use('/', urlRouter)
 
