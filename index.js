@@ -22,7 +22,7 @@ const isAuthorized = (req, res, next) => {
     .then(() => {
       next()
     })
-    .catch((error) => {
+    .catch(() => {
       res.status(401).json({message: 'Not Authorized'})
     })
 }

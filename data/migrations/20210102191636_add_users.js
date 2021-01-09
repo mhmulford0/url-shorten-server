@@ -1,14 +1,10 @@
-
 exports.up = function (knex) {
   return knex.schema.createTable('users', (tbl) => {
-    tbl.increments();
-    tbl.string('username').notNullable().unique();
-    tbl.string('password').notNullable();
-    tbl.string('email').notNullable().unique();
-    
-  });
-};
+    tbl.varchar('id').notNullable().unique()
+    tbl.string('email').notNullable().unique()
+  })
+}
 
 exports.down = function (knex) {
-  return knex.schema.dropTableIfExists('users');
-};
+  return knex.schema.dropTableIfExists('users')
+}

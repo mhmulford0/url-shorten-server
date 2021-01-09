@@ -1,5 +1,6 @@
 const db = require('../data/dbConfig')
 const Joi = require('joi')
+const admin = require('firebase-admin')
 
 const findUser = async (username) => {
   try {
@@ -41,4 +42,21 @@ const login = (username, password) => {
     password: password,
   })
 }
-module.exports = {findUser, signup, login}
+
+const userid = (idToken) => {
+  if (idToken) {
+    admin
+      .auth()
+      .verifyIdToken(idToken)
+      .then((decodedToken) => {
+        return decodedToken.uid
+      })
+      .catch((error) => {
+        res.status(401).json({message: 'Not Authorized'})
+      })
+  } else {
+    res.status(401).json({message: 'Not Authorized'})
+  }
+}
+
+module.exports = {findUser, signup, login, userid}

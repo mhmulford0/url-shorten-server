@@ -1,10 +1,11 @@
 const router = require('express').Router()
 const nanoid = require('nanoid')
 const db = require('../data/dbConfig')
-
+const admin = require('firebase-admin')
 const validUrl = require('valid-url')
 const publicIp = require('public-ip')
 const axios = require('axios')
+const {idToken} = require('../utils/users')
 
 router.get('/', (req, res) => {
   res.redirect('https://client.lnkshrt.app/')
@@ -107,6 +108,7 @@ router.post('/', async (req, res) => {
       await db('links').insert({
         longLink: longLink,
         shortLink: shortLink,
+        user_id: idToken(req.body.idToken),
       })
 
       res.status(201).json({message: shortLink})
@@ -116,6 +118,27 @@ router.post('/', async (req, res) => {
     }
   } else {
     res.status(400).json({message: 'invalid URL'})
+  }
+})
+
+router.post('/user', async (req, res) => {
+  const idToken = req.body.idToken
+
+  if (idToken) {
+    admin
+      .auth()
+      .verifyIdToken(idToken)
+      .then((decodedToken) => {
+        const uid = decodedToken.uid
+        console.log(uid)
+        res.status(200).end()
+      })
+      .catch((error) => {
+        console.log(error)
+        res.status(500).json({message: 'You must be logged in'})
+      })
+  } else {
+    res.status(401).json({message: 'Not Authorized'})
   }
 })
 
