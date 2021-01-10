@@ -3,6 +3,25 @@ const router = require('express').Router()
 const admin = require('firebase-admin')
 const db = require('../data/dbConfig')
 
+router.post('/', (req, res) => {
+  const sessionCookie = req.cookies.session
+
+  if (sessionCookie) {
+    admin
+      .auth()
+      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+      .then(() => {
+        res.status(200).end()
+      })
+      .catch((error) => {
+        console.log(error)
+        res.status(500).json({message: 'You must be logged in'})
+      })
+  } else {
+    res.status(401).json({message: 'Not Authorized'})
+  }
+})
+
 router.post('/login', (req, res) => {
   const idToken = req.body.idToken.toString()
   if (idToken) {
@@ -67,7 +86,7 @@ router.post('/signup', (req, res) => {
 
 router.get('/logout', (req, res) => {
   res.clearCookie('session')
-  res.status(200).end()
+  res.end()
 })
 
 module.exports = router

@@ -20,7 +20,6 @@ router.post('/', (req, res) => {
   } else {
     res.status(401).json({message: 'Not Authorized'})
   }
-  //res.status(200).json({message: 'IT FUCKIGN WORKS BOOOOOOOOOI'})
 })
 
 module.exports = router

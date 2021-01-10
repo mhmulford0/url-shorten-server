@@ -52,11 +52,11 @@ const userid = (idToken) => {
         return decodedToken.uid
       })
       .catch((error) => {
-        res.status(401).json({message: 'Not Authorized'})
+        // res.status(401).json({message: 'Not Authorized'})
       })
   } else {
-    res.status(401).json({message: 'Not Authorized'})
+    // res.status(401).json({message: 'Not Authorized'})
   }
 }
 
-module.exports = {findUser, signup, login, userid}
+module.exports = {findUser, signup, login, userid: userid()}

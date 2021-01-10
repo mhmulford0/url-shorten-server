@@ -55,7 +55,7 @@ router.get('/:shortLink', async (req, res) => {
   }
 })
 
-router.get('/:shortLink/info', async (req, res) => {
+router.post('/:shortLink/info', async (req, res) => {
   const shortLink = req.params.shortLink
   try {
     const fullData = await db('links')
@@ -102,13 +102,16 @@ router.get('/:shortLink/info', async (req, res) => {
 router.post('/', async (req, res) => {
   const {longLink} = req.body
   const shortLink = nanoid.customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7)()
+  const idToken = req.body.idToken
+  let {uid} = await admin.auth().verifyIdToken(idToken)
 
+  console.log(uid)
   if (validUrl.isWebUri(longLink)) {
     try {
       await db('links').insert({
         longLink: longLink,
         shortLink: shortLink,
-        user_id: idToken(req.body.idToken),
+        user_id: uid,
       })
 
       res.status(201).json({message: shortLink})
@@ -122,16 +125,18 @@ router.post('/', async (req, res) => {
 })
 
 router.post('/user', async (req, res) => {
-  const idToken = req.body.idToken
-
-  if (idToken) {
+  const sessionCookie = req.cookies.session
+  console.log(sessionCookie)
+  if (sessionCookie) {
     admin
       .auth()
-      .verifyIdToken(idToken)
-      .then((decodedToken) => {
-        const uid = decodedToken.uid
-        console.log(uid)
-        res.status(200).end()
+      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+      .then((decodedClaims) => {
+        const uid = decodedClaims.uid
+        db('links')
+          .select('id', 'longLink', 'shortLink')
+          .where('user_id', uid)
+          .then((data) => res.status(200).json({data}))
       })
       .catch((error) => {
         console.log(error)
