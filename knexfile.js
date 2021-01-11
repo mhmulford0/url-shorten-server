@@ -1,24 +1,23 @@
-module.exports = {
+require('dotenv').config()
 
+module.exports = {
   development: {
     client: 'sqlite3',
     connection: {
-      filename: './data/links.db3'
+      filename: './data/links.db3',
     },
     useNullAsDefault: true,
     migrations: {
       directory: './data/migrations',
       tableName: 'dbmigrations',
     },
-    seeds: { directory: './data/seeds' },
+    seeds: {directory: './data/seeds'},
   },
 
   production: {
     client: 'sqlite3',
     connection: {
-      filename: './data/cloud-school.sqlite3'
+      filename: process.env.PG_CONNECT_URI,
     },
-    useNullAsDefault: true
-  }
-
-};
+  },
+}
