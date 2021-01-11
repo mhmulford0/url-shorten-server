@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
   res.redirect('https://client.lnkshrt.app/')
 })
 
-router.get('/:shortLink', isAuthorized, async (req, res) => {
+router.get('/:shortLink', async (req, res) => {
   const shortLink = req.params.shortLink
   let vistorIp
   if (process.env.NODE_ENV == 'development') {
