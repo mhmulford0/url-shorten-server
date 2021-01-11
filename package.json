@@ -28,6 +28,7 @@
     "nanoid": "^3.1.16",
     "passport": "^0.4.1",
     "passport-google-oauth": "^2.0.0",
+    "pg": "^8.5.1",
     "public-ip": "^4.0.2",
     "sqlite3": "^5.0.0",
     "valid-url": "^1.0.9"
