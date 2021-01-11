@@ -15,8 +15,10 @@ module.exports = {
   },
 
   production: {
-    client: 'pg',
-    connection: process.env.PG_CONNECT_URI,
+    client: 'sqlite3',
+    connection: {
+      filename: './data/links.db3',
+    },
     useNullAsDefault: true,
     migrations: {
       directory: './data/migrations',
