@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "NODE_ENV=development node index.js",
-    "heroku-postbuild": "npx knex:migrate latest"
+    "heroku-postbuild": "npx knex migrate:latest"
   },
   "author": "Matthew Mulford",
   "license": "MIT",
