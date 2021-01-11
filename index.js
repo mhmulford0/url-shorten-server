@@ -30,9 +30,8 @@ app.use(
     credentials: true,
   }),
 )
-
-app.use('/auth', authRouter)
 app.use('/', urlRouter)
+app.use('/auth', authRouter)
 
 app.listen(port, () => {
   console.log(`running on http://localhost:${port}`)
