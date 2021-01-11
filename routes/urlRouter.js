@@ -5,20 +5,20 @@ const admin = require('firebase-admin')
 const validUrl = require('valid-url')
 const publicIp = require('public-ip')
 const axios = require('axios')
-const {idToken} = require('../utils/users')
+
+const isAuthorized = require('../middleware/isAuthorized')
 
 router.get('/', (req, res) => {
   res.redirect('https://client.lnkshrt.app/')
 })
 
-router.get('/:shortLink', async (req, res) => {
+router.get('/:shortLink', isAuthorized, async (req, res) => {
   const shortLink = req.params.shortLink
   let vistorIp
   if (process.env.NODE_ENV == 'development') {
     try {
       vistorIp = await publicIp.v4()
     } catch (error) {
-      console.log(error)
       vistorIp = '8.8.8.8'
     }
   } else {
@@ -50,12 +50,11 @@ router.get('/:shortLink', async (req, res) => {
       res.status(400).json({message: 'Link not found'})
     }
   } catch (error) {
-    console.log(error)
     res.status(500).json({message: 'Server Error'})
   }
 })
 
-router.post('/:shortLink/info', async (req, res) => {
+router.post('/:shortLink/info', isAuthorized, async (req, res) => {
   const shortLink = req.params.shortLink
   try {
     const fullData = await db('links')
@@ -94,18 +93,16 @@ router.post('/:shortLink/info', async (req, res) => {
       res.status(200).json({linkInfo: linkData[0], clickInfo: clickData})
     }
   } catch (error) {
-    console.log(error)
     res.status(500).json({message: 'server error'})
   }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', isAuthorized, async (req, res) => {
   const {longLink} = req.body
   const shortLink = nanoid.customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 7)()
   const idToken = req.body.idToken
   let {uid} = await admin.auth().verifyIdToken(idToken)
 
-  console.log(uid)
   if (validUrl.isWebUri(longLink)) {
     try {
       await db('links').insert({
@@ -116,7 +113,6 @@ router.post('/', async (req, res) => {
 
       res.status(201).json({message: shortLink})
     } catch (error) {
-      console.log(error)
       res.status(500).json({message: 'there was an error with your request'})
     }
   } else {
@@ -124,9 +120,9 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.post('/user', async (req, res) => {
+router.post('/user', isAuthorized, async (req, res) => {
   const sessionCookie = req.cookies.session
-  console.log(sessionCookie)
+
   if (sessionCookie) {
     admin
       .auth()
@@ -138,8 +134,7 @@ router.post('/user', async (req, res) => {
           .where('user_id', uid)
           .then((data) => res.status(200).json({data}))
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(() => {
         res.status(500).json({message: 'You must be logged in'})
       })
   } else {

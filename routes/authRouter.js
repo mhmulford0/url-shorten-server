@@ -9,12 +9,11 @@ router.post('/', (req, res) => {
   if (sessionCookie) {
     admin
       .auth()
-      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+      .verifySessionCookie(sessionCookie, true)
       .then(() => {
         res.status(200).end()
       })
-      .catch((error) => {
-        console.log(error)
+      .catch(() => {
         res.status(500).json({message: 'You must be logged in'})
       })
   } else {
@@ -74,7 +73,7 @@ router.post('/signup', (req, res) => {
               res.status(401).json({message: 'UNAUTHORIZED REQUEST!'})
             }
           })
-          .catch((err) => console.log(err))
+          .catch(() => res.status(500).json({message: 'Database Error'}))
       })
       .catch(() => {
         res.status(400).json({message: 'Error fetching user data:'})

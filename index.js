@@ -13,21 +13,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 })
 
-const isAuthorized = (req, res, next) => {
-  const sessionCookie = req.cookies.session || ''
-
-  admin
-    .auth()
-    .verifySessionCookie(sessionCookie, true)
-    .then(() => {
-      next()
-    })
-    .catch(() => {
-      res.status(401).json({message: 'Not Authorized'})
-    })
-}
-
-const linkInfoRouter = require('./routes/linkInfoRouter')
 const urlRouter = require('./routes/urlRouter')
 const authRouter = require('./routes/authRouter')
 
@@ -46,7 +31,6 @@ app.use(
   }),
 )
 
-app.use('/linkInfo', isAuthorized, linkInfoRouter)
 app.use('/auth', authRouter)
 app.use('/', urlRouter)
 
