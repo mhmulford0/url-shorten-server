@@ -19,5 +19,12 @@ module.exports = {
     connection: {
       filename: process.env.PG_CONNECT_URI,
     },
+    useNullAsDefault: true,
+    migrations: {
+      directory: './data/migrations',
+      tableName: 'dbmigrations',
+    },
+    seeds: {directory: './data/seeds'},
+  },
   },
 }
