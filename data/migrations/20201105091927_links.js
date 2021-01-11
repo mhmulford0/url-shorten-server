@@ -3,7 +3,7 @@ exports.up = function (knex) {
     tbl.increments()
     tbl.string('longLink').notNullable()
     tbl.string('shortLink').notNullable()
-    tbl.integer('user_id').notNullable().references('users.id')
+    tbl.varchar('user_id').notNullable().references('users.id')
   })
 }
 
