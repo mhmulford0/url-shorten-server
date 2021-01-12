@@ -37,7 +37,7 @@ router.get('/:shortLink', async (req, res) => {
         `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`,
       )
 
-      const locationData = `${visitorLocation.data.region_name}, ${visitorLocation.data.city} ${visitorLocation.data.country_code} `
+      const locationData = `${visitorLocation.data.region_name}, ${visitorLocation.data.city}, ${visitorLocation.data.country_code} `
 
       await db('click_info').insert({
         location: locationData,
@@ -126,7 +126,7 @@ router.post('/user', isAuthorized, async (req, res) => {
   if (sessionCookie) {
     admin
       .auth()
-      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+      .verifySessionCookie(sessionCookie, true)
       .then((decodedClaims) => {
         const uid = decodedClaims.uid
         db('links')
@@ -142,4 +142,26 @@ router.post('/user', isAuthorized, async (req, res) => {
   }
 })
 
+router.delete('/:shortLink', isAuthorized, (req, res) => {
+  const shortLink = req.params.shortLink
+  const sessionCookie = req.cookies.session
+  if (sessionCookie) {
+    admin
+      .auth()
+      .verifySessionCookie(sessionCookie, true)
+      .then((decodedClaims) => {
+        const uid = decodedClaims.uid
+        db('links')
+          .where({user_id: uid, shortLink: shortLink})
+          .del()
+          .then(() => res.status(200).json({message: 'Link Deleted'}))
+          .catch(() => res.status(400).end())
+      })
+      .catch(() => {
+        res.status(500).json({message: 'You must be logged in'})
+      })
+  } else {
+    res.status(401).json({message: 'Not Authorized'})
+  }
+})
 module.exports = router
