@@ -37,7 +37,7 @@ router.get('/:shortLink', async (req, res) => {
         `http://api.ipstack.com/${vistorIp}?access_key=${process.env.API_KEY}&output=json`,
       )
 
-      const locationData = `${visitorLocation.data.country_code} ${visitorLocation.data.region_name} ${visitorLocation.data.city}`
+      const locationData = `${visitorLocation.data.region_name}, ${visitorLocation.data.city} ${visitorLocation.data.country_code} `
 
       await db('click_info').insert({
         location: locationData,
