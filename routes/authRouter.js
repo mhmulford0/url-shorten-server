@@ -32,7 +32,7 @@ router.post('/login', (req, res) => {
         (sessionCookie) => {
           const options = {maxAge: expiresIn, httpOnly: true}
           res.cookie('session', sessionCookie, options)
-          res.status(201).json({message: 'success'})
+          res.status(200).json({message: 'success'})
         },
         () => {
           res.status(401).json({message: 'UNAUTHORIZED REQUEST!'})

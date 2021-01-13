@@ -4,7 +4,7 @@
   "description": "shorten urls",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "node index.js",
     "dev": "NODE_ENV=development node index.js",
     "heroku-postbuild": "npx knex migrate:latest"
@@ -22,6 +22,7 @@
     "express-jwt": "^6.0.0",
     "firebase": "^8.2.1",
     "firebase-admin": "^9.4.2",
+    "jest": "^26.6.3",
     "joi": "^17.3.0",
     "jwks-rsa": "^1.12.1",
     "knex": "^0.21.12",
@@ -31,10 +32,18 @@
     "pg": "^8.5.1",
     "public-ip": "^4.0.2",
     "sqlite3": "^5.0.0",
+    "supertest": "^6.0.1",
+    "supertest-session": "^4.1.0",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {
     "eslint": "^7.17.0",
     "nodemon": "^2.0.7"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
