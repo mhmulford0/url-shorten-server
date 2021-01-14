@@ -64,16 +64,6 @@ describe('Check Link Shortner', () => {
 
 describe('Get All Links for a user', () => {
   test('returns all links for signed in user', async () => {
-    const user = await admin.auth().getUserByEmail('mhmulford00@gmail.com')
-    const customToken = await admin.auth().createCustomToken(user.uid)
-    const idTokenResponse = await axios.post(
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=AIzaSyCgO-w3WVqCwUiKCPfNbOuqa-fofw3W1_k',
-      {
-        token: customToken,
-        returnSecureToken: true,
-      },
-    )
-
     return await request(app)
       .post('/user')
       .set('Cookie', cookie)
